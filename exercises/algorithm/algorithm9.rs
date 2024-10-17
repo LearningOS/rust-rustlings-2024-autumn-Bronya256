@@ -1,9 +1,7 @@
-/*
-	heap
-	This question requires you to implement a binary heap function
-*/
-// I AM NOT DONE
 
+/*
+    Heap
+*/
 use std::cmp::Ord;
 use std::default::Default;
 
@@ -37,28 +35,56 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.items.push(value);
+        self.count += 1;
+        self.heapify_up(self.count);
     }
 
-    fn parent_idx(&self, idx: usize) -> usize {
+    fn parent_idx(idx: usize) -> usize {
         idx / 2
     }
 
-    fn children_present(&self, idx: usize) -> bool {
-        self.left_child_idx(idx) <= self.count
-    }
-
-    fn left_child_idx(&self, idx: usize) -> usize {
+    fn left_child_idx(idx: usize) -> usize {
         idx * 2
     }
 
-    fn right_child_idx(&self, idx: usize) -> usize {
-        self.left_child_idx(idx) + 1
+    fn right_child_idx(idx: usize) -> usize {
+        idx * 2 + 1
     }
 
-    fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+    fn heapify_up(&mut self, mut idx: usize) {
+        while idx > 1 && (self.comparator)(&self.items[idx], &self.items[Self::parent_idx(idx)]) {
+            let parent_idx = Self::parent_idx(idx);
+            self.items.swap(idx, parent_idx);
+            idx = parent_idx;
+        }
+    }
+
+    fn heapify_down(&mut self, mut idx: usize) {
+        while Self::left_child_idx(idx) <= self.count {
+            let mut child_idx = Self::left_child_idx(idx);
+            if child_idx < self.count && (self.comparator)(&self.items[child_idx + 1], &self.items[child_idx]) {
+                child_idx += 1;
+            }
+            if !(self.comparator)(&self.items[child_idx], &self.items[idx]) {
+                break;
+            }
+            self.items.swap(idx, child_idx);
+            idx = child_idx;
+        }
+    }
+
+    fn remove(&mut self) -> Option<T> {
+        if self.is_empty() {
+            return None;
+        }
+        self.items.swap(1, self.count);
+        let removed = self.items.pop();
+        self.count -= 1;
+        if !self.is_empty() {
+            self.heapify_down(1);
+        }
+        removed
     }
 }
 
@@ -84,8 +110,7 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        self.remove()
     }
 }
 
